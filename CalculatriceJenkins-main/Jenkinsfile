@@ -1,1 +1,36 @@
 A vous de le remplir !
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git branch: 'main', url: 'https://github.com/refka-jebali/calculatriceJenkins.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t calculatrice-app .'
+            }
+        }
+
+        stage('Deploy to Test Environment') {
+            steps {
+                sh 'docker run -d -p 3000:3000 --name calculatrice-test calculatrice-app'
+            }
+        }
+
+        stage('Run Selenium Tests') {
+            steps {
+                sh 'node test_calculatrice.js'
+            }
+        }
+
+        stage('Deploy to Production (Simulated)') {
+            steps {
+                sh 'docker run -d -p 4000:3000 --name calculatrice-prod calculatrice-app'
+            }
+        }
+    }
+}
