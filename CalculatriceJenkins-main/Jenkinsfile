@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -16,12 +17,7 @@ pipeline {
 
         stage('Deploy to Test Environment') {
             steps {
-                // Supprimer l’ancien conteneur s’il existe
-                sh 'docker rm -f calculatrice-test || true'
-                // Lancer en test
                 sh 'docker run -d -p 3000:3000 --name calculatrice-test calculatrice-app'
-                // Attendre un peu que l’app démarre
-                sh 'sleep 5'
             }
         }
 
@@ -32,11 +28,7 @@ pipeline {
         }
 
         stage('Deploy to Production (Simulated)') {
-            when {
-                expression { currentBuild.currentResult == 'SUCCESS' }
-            }
             steps {
-                sh 'docker rm -f calculatrice-prod || true'
                 sh 'docker run -d -p 4000:3000 --name calculatrice-prod calculatrice-app'
             }
         }
